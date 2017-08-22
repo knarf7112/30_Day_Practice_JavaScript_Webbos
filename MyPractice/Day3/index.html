@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Scoped CSS Variable and JS</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <h2>Update CSS Variable with <span class="h1">JS</span><h2>
+
+        <div class="controls">
+            <label for="spacing">Spacing:</label>
+            <input type="range" name="spacing" min="10" max="200" value="10" data-sizing="px" data-cool="+poop">
+
+            <label for="blur">Blur:</label>
+            <input type="range" name="blur" min="0" max="25" value="10" data-sizing="px">
+
+            <label for="base">Base Color</label>
+            <input type="color" name="base" value="#ffc600">
+        </div>
+
+        <img src="https://source.unsplash.com/7bwQXzbF6KE/800x500" alt="none">
+        <style>
+        /* :root can be declaring global CSS variables : 去看document.styleSheets[0].rules[0].style內會看到設定存放在cssText屬性內 */
+        :root{
+            --base: #ffc600;
+            --spacing: 10px;
+            --blur: 10px;
+        }
+        
+        img{
+            padding: var(--spacing);
+            background: var(--base);
+            filter: blur(var(--blur));
+        }
+
+        .h1{
+            color: var(--base);
+        }
+         /*
+           misc styles, nothing to do with CSS variables
+         */
+
+        body{
+            text-align: center;
+        }
+
+        body{
+            background: #193549;
+            color:white;
+            font-family: 'helvetica neue', sans-serif;
+            font-weight: 100;
+            font-size: 50px;
+        }
+
+        .controls{
+            margin-bottom: 50px;
+        }
+
+        input{
+            width: 100px;
+        }  
+        </style>
+
+        <script>
+            const inputs = document.querySelectorAll('.controls input');
+
+            function handleUpdate(){
+                //console.log(this.value);
+                const suffix = this.dataset.sizing || '';
+                
+                //document.documentElement represent the root element of the document : 為了變更global的variable
+                document.documentElement.style.setProperty(`--${ this.name }`, this.value + suffix);
+                //console.log(suffix);
+            }
+
+            inputs.forEach(input => input.addEventListener('change', handleUpdate));
+            inputs.forEach(input => input.addEventListener('mousemove', handleUpdate));//因為change事件要結束才會觸發,所以須要靠mousemove事件來偵測即時的拖拉
+
+            //測試var內的變數是否可變更,(10秒後))找個內層的h2改變--base的顏色,結果會變更內層的JS文字,但圖片背景顏色不變,原因是因為style會參考較靠近的變量來當作依據
+            setTimeout(function(){
+                var h2 = document.querySelector('h2');
+                h2.style.setProperty('--base','#000000');
+            },5000);
+        </script>
+    </body>
+</html>

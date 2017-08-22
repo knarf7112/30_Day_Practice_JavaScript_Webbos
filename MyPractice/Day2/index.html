@@ -94,6 +94,7 @@
             const hour = now.getHours();
             const hourDegrees = ((hour / 12) * 360) + 90;
             
+            //停掉transition原因是因為再整點0時會抖動,抖動原因是因為0deg或90deg造成先還原到0deg的位置再跳到計算位置
             if(second === 0){
                 secondDOM.style.transition = 'none';
                 minDOM.style.transform = `none`;
