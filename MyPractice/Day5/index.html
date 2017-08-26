@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Flex Panels 💪</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href='https://fonts.googleapis.com/css?family=Amatic+SC' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <style>
+            /* 總共設了3層flex container */
+
+            html{
+                box-sizing: border-box;
+                background:#ffc600;
+                font-family:'helvetica neue';
+                font-size: 20px;
+                font-weight: 200;
+            }
+
+            body{
+                margin: 0;
+            }
+
+            *, *:before, *:after{
+                box-sizing: inherit;
+            }
+
+            .panels{
+                min-height: 100vh;
+                overflow: hidden;
+                display: flex;
+            }
+
+            /*設定panel的顯示區塊*/
+            .panel{
+                background: #6b0f9c;
+                box-shadow: inset 0 0 0 5px rgba(255, 255, 255, 0.1);
+                color: white;
+                text-align: center;
+                align-items: center;
+                /* Safari transitionend event.propertyName === flex */
+                /* Chrome + FF transitionend event.propertyName === flex-grow */
+                transition:
+                 font-size 0.7s cubic-bezier(0.61, -0.19, 0.7, -0.11),
+                 flex 0.7s cubic-bezier(0.61, -0.19, 0.7, -0.11),
+                 background 0.2s;
+                 font-size: 20px;
+                 background-size: cover;
+                 background-position: center;
+
+                 /* 設定flex區間設定為1目的是要讓每個flex-item平均分配空間 */
+                 flex: 1;
+                 
+                 justify-content: center; /* 用來決定內容元素與整個flexbox的"水平對齊"位置,也就是說設為flex-end就是對齊的最左邊的main end */
+                 align-items: center; /* 用來決定內容元素與整個flexbox的"垂直對齊"位置,也就是說設為flex-end就是對齊最下面的cross end */
+                 display:flex; /* 再將內層的flex-item設為flex container,使得其子層也變成flex-item */
+                 flex-direction: column;
+                 
+            }
+
+            /*載入背景圖案*/
+            .panel1{ background-image: url(https://source.unsplash.com/gYl-UtwNg_I/1500x1500); }
+            .panel2{ background-image: url(https://source.unsplash.com/1CD3fd8kHnE/1500x1500); }
+            .panel3{ background-image: url(https://images.unsplash.com/photo-1465188162913-8fb5709d6d57?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&cs=tinysrgb&w=1500&h=1500&fit=crop&s=967e8a713a4e395260793fc8c802901d); }
+            .panel4{ background-image: url(https://source.unsplash.com/ITjiVXcwVng/1500x1500); }
+            .panel5{ background-image: url(https://source.unsplash.com/3MNzGlQM7qs/1500x1500); }
+
+            
+            .panel > *{
+                margin: 0;
+                width: 100%;
+                transition: transform 0.5s;
+                /*border: 1px solid yellow;*/
+                flex: 1 0 auto; /* 此時已變成設定縱向的寬度 */
+                display: flex;/* 再設此為flex container */
+                justify-content:center;
+                align-items:center;
+            }
+
+            .panel > *:first-child{
+                transform: translateY(-100%); /* 因在屏幕的上面,所以就看不到了,可以去chrome把transform勾勾取消可看到效果,會漸進往下移動 */
+            }
+            .panel.open-active > *:first-child {
+                transform: translateY(0);
+            }
+            .panel > *:last-child{
+                transform: translateY(100%); /* 因在屏幕的下面,所以就看不到了,可以去chrome把transform勾勾取消可看到效果,會漸進往上移動 */
+            }
+            .panel.open-active > *:last-child{
+                transform: translateY(0);
+            }
+
+            .panel p{
+                text-transform: uppercase;
+                font-family: 'Amatic SC', cursive;
+                text-shadow: 0 0 4px rgba(0, 0, 0, 0.72), 0 0 14px rgba(0, 0, 0, 0.45);
+                font-size: 2em;
+            }
+
+            .panel p:nth-child(2){
+                font-size: 4em;
+            }
+
+            .panel.open{
+                flex: 5; /* 這邊設定5的原因是因為.panel只有設為1,這樣就可以相對表示為5倍的空間 */
+                font-size: 40px;
+            }
+
+            .cta{
+                color: white;
+                text-decoration: none;
+            }
+        </style>
+
+    <div class="panels">
+        <div class="panel panel1">
+          <p>Hey</p>
+          <p>Let's</p>
+          <p>Dance</p>
+        </div>
+        <div class="panel panel2">
+          <p>Give</p>
+          <p>Take</p>
+          <p>Receive</p>
+        </div>
+        <div class="panel panel3">
+          <p>Experience</p>
+          <p>It</p>
+          <p>Today</p>
+        </div>
+        <div class="panel panel4">
+          <p>Give</p>
+          <p>All</p>
+          <p>You can</p>
+        </div>
+        <div class="panel panel5">
+          <p>Life</p>
+          <p>In</p>
+          <p>Motion</p>
+        </div>
+    </div>
+    
+      <script>
+          const panels = document.querySelectorAll('.panel');
+          var lastClick;
+
+          function toggleOpen(){
+              if(lastClick !== undefined && lastClick !== this){
+                lastClick.classList.toggle('open');
+              }
+              lastClick = this;
+              
+              this.classList.toggle('open');
+          }
+          function toggleActive(e){
+              //console.log(e.propertyName);
+              //Safari is 'flex',Chrome + FF is 'flex-grow'
+              if(e.propertyName.includes('flex')){
+                this.classList.toggle('open-active');
+              }
+          }
+          panels.forEach(panel=>panel.addEventListener('click',toggleOpen));
+          panels.forEach(panel=>panel.addEventListener('transitionend', toggleActive));
+      </script>
+    </body>
+</html>
