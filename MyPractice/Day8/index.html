@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>HTML5 Canvas</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+            <canvas id="draw" width="800" height="800" style="margin: 500px; border:1px solid red;"></canvas>
+            <script>
+                const canvas = document.querySelector('#draw');
+                const ctx = canvas.getContext('2d');
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                ctx.strokeStyle = '#BADA55';
+                ctx.lineJoin = 'round'; //轉彎的斜角， 'round':轉彎處插入一個扇形且原角半徑等同線寬, 'bevel': 切掉轉彎的角(切掉), 'miter': 尖的角(即兩線的延伸交叉尖點)
+                ctx.lineCap = 'round'; //線段的尾端， 'round':半圓,  'square': 正方形,  'butt':長方型
+                ctx.lineWidth = 100;
+                //ctx.globalCompositeOperation = 'multiply'; //顏色疊加
+
+                let isDrawing = false; //設置是否正在繪圖(按住滑鼠移動且未放開)
+                let lastX = 0; // recording the last X axis
+                let lastY = 0; // recording the last Y axis
+                let hue = 0; // 用來變更HSL內的漸進顏色
+                let lineWidth = 100; 
+                let direction = true;
+
+                canvas.addEventListener('mousemove',draw);
+                canvas.addEventListener('mousedown',e=>{isDrawing = true; [lastX, lastY] = [e.offsetX, e.offsetY];});
+                canvas.addEventListener('mouseup',e=>{isDrawing = false;});
+                canvas.addEventListener('mouseout',e=>{isDrawing = false;});
+
+                function draw(e){
+                    if(!isDrawing){
+                        return ;
+                    }
+                    //console.log(e);
+                    ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+                    ctx.beginPath(); //canvas中的繪製方法(ex: stroke, fill)都會以"上一次beginPath"之後的所有路徑為基礎進行繪製
+                    // start from 
+                    ctx.moveTo(lastX, lastY);
+                    /*
+                    事件坐標軸屬性
+                    clientX,Y : 遊覽器視窗左上點(0,0)到滑鼠點的X,y坐標(可視區域不包括上面的工具列與右側和下側scroll bar)
+                    pageX,Y   : document內的整頁左上點(0,0)到滑鼠點的X,y坐標(類似clientX,Y但會包含scroll下拉的位置)
+                    offsetX,Y : 相對於目前元素左上點(0,0)的滑鼠點的X,y坐標
+                    screenX,Y : 螢幕左上點(0,0)開始到滑鼠點的X,y坐標
+                     */
+                    // go to
+                    ctx.lineTo(e.offsetX, e.offsetY);
+                    //ctx.lineWidth = lineObj.getLineWidth();
+                    //ctx.strokeStyle = lineObj.getLineColor(); 
+                    ctx.stroke();
+                    [lastX , lastY] = [e.offsetX, e.offsetY]; // use 'destructuring'
+
+                    hue++;
+                    if(hue >= 360){
+                        hue = 0;
+                    }
+                    if(ctx.lineWidth >= 100 || ctx.lineWidth <= 1){
+                        direction = !direction;
+                    }
+                    direction ? ctx.lineWidth++ : ctx.lineWidth--;
+                }
+
+                //-----------------------------------------------------------------------------
+                //my solution is create a style and width change function
+                var lineObj = changeLine();
+                function changeLine(){
+                    let maxColor = Math.pow(2,24) - 1;
+                    let maxWidth = 50;
+                    let currentColor = 0;
+                    let currentWidth = 0;
+                    let colorDirection = true;
+                    let widthDirection = true;
+
+                    return {
+                        getLineColor: function(){
+                            if(currentColor >=  maxColor || currentColor < 0){
+                                colorDirection = !colorDirection;
+                            }
+                            currentColor = colorDirection ? ++currentColor : --currentColor;
+                            return '#' + currentColor.toString('16');
+                        },
+                        getLineWidth: function(){
+                            if(currentWidth >=  maxWidth || currentWidth < 0){
+                                widthDirection = !widthDirection;
+                            }
+                            currentWidth = widthDirection ? ++currentWidth : --currentWidth;
+                            return currentWidth;
+                        }
+                    }
+                }
+            </script>
+
+            <style>
+              html, body {
+                margin:0;
+              }
+            </style>
+    </body>
+</html>
