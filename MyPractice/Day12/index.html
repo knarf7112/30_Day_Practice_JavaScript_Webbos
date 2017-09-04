@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Key Detection</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script type="text/javascript" src="http://www.cornify.com/js/cornify.js"></script>
+    </head>
+    <body>
+        
+        <script>
+
+            const pressed = [];
+            const secretCode = 'knock';
+            window.addEventListener('keyup',(e)=>{
+                console.log(e.key);
+                pressed.push(e.key);
+                 //splice表示萃取陣列,取負的表示反過從後面當初始回推,當陣列長度大於secretCode的長度(即陣列超過6個時,就把第一個裁切掉 [splice(-6, 1)])
+                const arr = pressed.splice(-secretCode.length - 1, pressed.length - secretCode.length); 
+                console.log(arr, pressed);
+
+                if(pressed.join('').includes(secretCode)){
+                    alert('Bingo  You got it !!!');
+                    cornify_add();
+                }
+            });
+        </script>
+        
+        <!--
+        <script data-description="my solution">
+            const secretCode = 'knock';
+             var keyRecorder = {
+                result: [], 
+                get: function(){ return this.result; },
+                set: function(val){ 
+                    if(this.result.length >= 5){
+                        this.result.shift();
+                    }
+                    this.result.push(val);
+                },
+             }             
+             document.addEventListener('keyup', handleKey);
+             function handleKey(e){
+                //console.log('keyUp ', e.keyCode, e);
+                keyRecorder.set(e.key);
+                console.log(keyRecorder.get());
+                if(keyRecorder.get().join('').includes(secretCode)){
+                    console.log('Bingo  you got it !!!');
+                    cornify_add();
+                }
+             }
+
+        </script>
+        -->
+    </body>
+</html>
