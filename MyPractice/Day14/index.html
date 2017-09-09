@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>JS Reference VS Copy</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <script>
+            // start with strings, numbers and booleans
+            let age = 100;
+            let age2 = age;
+            console.log(age, age2);
+            age = 200;
+            console.log(age, age2);
+            let name = 'Wes';
+            let name2 = name;
+            console.log(name, name2);
+            name = 'wesley';
+            console.log(name, name2);
+            
+            // Let's say we have an array
+            const players = ['Wes', 'Sarah', 'Ryan', 'Poppy'];
+        
+            // and we want to make a copy of it.
+            const team = players;
+
+            console.log(players, team);
+            // You might think we can just do something like this:
+            team[3] = 'Lux'; 
+            console.log(players,team);
+
+            // however what happens when we update that array?
+        
+            // now here is the problem!
+        
+            // oh no - we have edited the original array too!
+        
+            // Why? It's because that is an array reference, not an array copy. They both point to the same array!
+        
+            // So, how do we fix this? We take a copy instead!
+            const team2 = players.slice(); // copy an array 但僅複製array,內部的物件參考仍是一樣的,即外層array是不同的記憶體位置,但陣列內的資料物件參考是一樣的
+            
+            // one day
+        
+            // or create a new array and concat the old one in
+            const team3 = [].concat(players);
+
+            // or use the new ES6 Spread
+            const team4 = [...players];
+            team4[3] = 'heee hawww';
+            console.log(team4);
+
+
+            const team5 = Array.from(players);
+            // now when we update it, the original one isn't changed
+        
+            // The same thing goes for objects, let's say we have a person object
+        
+            // with Objects
+            const test = { a: 'abc', b: 123, c: true };
+            const person = {
+                name: 'Wes Bos',
+                age: 80,
+                test: test
+            };
+
+            const captain = person;
+            captain.number = 99;
+
+            console.log(captain);
+
+            // and think we make a copy:
+            const cap2 = Object.assign({number: 555}, person, { number: 888, age: 666, description: '後來加上的'}); //若後面的屬性名稱相同則後面的會覆蓋前面的
+            console.log(cap2);
+
+            // how do we take a copy instead?
+            const cap3 = { ...person };
+
+            console.log('inside Obj reference equals?', (person.test === test));
+            console.log(cap3);
+            // We will hopefully soon see the object ...spread
+        
+            // Things to note - this is only 1 level deep - both for Arrays and Objects. lodash has a cloneDeep method, but you should think twice before using it.
+            const knock = {
+                name: 'Knock',
+                age: 999,
+                social: {
+                    twitter: '@knock',
+                    facebook: 'knock.developer',
+                    group: {
+                        developer: '@aaa',
+                        designer: ['test1', 'test2', { test3: [1,2,3] }]
+                    }
+                },
+                friends: ['@aaa', '@bbb', '@ccc']
+            };
+
+            //Object.assign只會複製第一層物件到另一個記憶體上,內部的物件會是原本的參考指標
+            const copyKnock = Object.assign({}, knock, { social:{ group:{ UI: 'Knock' }, gmail: 'knock@gmail.com' } }); //後面那一層會把內部的屬性覆蓋掉,也就是social內原本的資料都會不見
+            console.log(copyKnock);
+
+            //深層的物件複製  
+            const depthCopy = JSON.parse(JSON.stringify(knock));
+
+        </script>
+    </body>
+</html>
