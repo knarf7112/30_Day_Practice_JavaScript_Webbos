@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Mouse Shadow</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <div class="hero">
+            <h1 contenteditable>🔥WOAH!</h1>
+        </div>
+
+        <style>
+            html {
+                color: black;
+                font-family: sans-serif;
+            }
+
+            .hero {
+                min-height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                color: black;
+            }
+
+            h1 {
+                text-shadow: 10px 10px 0 rgba(0, 0, 0, 1);
+                font-size: 100px;
+            }
+        </style>
+        
+        <script>
+            const hero = document.querySelector('.hero');
+            const text = hero.querySelector('h1');
+            const walk = 100; // 100px 移動的單位
+
+            function shadow(e) {
+                const { offsetWidth: width, offsetHeight: height } = hero;
+                let { offsetX: x, offsetY: y } = e;
+                
+                //console.log(this, e.target);
+                //若滑鼠移到h1上,e.target就會轉移到h1上,這樣的offsetX會是相對於h1的,非期望的外層div
+                //所以遇到h1時,另外加上去
+                if(this !== e.target){
+                    x = x + e.target.offsetLeft; // h1內部的相對X軸位置 + div左側到h1左側的間距
+                    y = y + e.target.offsetTop; // h1內部的相對Y軸位置 + div上側到h1上側的間距
+                }
+
+                //記算中心點
+                const xWalk = Math.round(( x / width * walk) - ( walk / 2));
+                const yWalk = Math.round(( y / height * walk) - ( walk / 2));
+
+                //console.log(xWalk, yWalk);
+                text.style.textShadow = `
+                        ${xWalk}px ${yWalk}px 0 rgba(255, 0, 255, 0.7),
+                        ${xWalk * -1}px ${yWalk}px 0 rgba(0, 255, 255, 0.7),
+                        ${yWalk}px ${xWalk * -1}px 0 rgba(0, 255, 0, 0.7),
+                        ${yWalk * -1}px ${xWalk}px 0 rgba(0, 0, 255, 0.7)
+                    `;
+            }
+
+            hero.addEventListener('mousemove', shadow);
+        </script>
+        
+        <!--
+        <script data-description="my solution">
+            const outsideFrame = document.querySelector('div.hero');
+            const h1 = outsideFrame.querySelector('h1');
+            const h1Info = h1.getBoundingClientRect();
+            const centralX = Math.floor(h1Info.left + (h1Info.width / 2));
+            const centralY = Math.floor(h1Info.top + (h1Info.height / 2));
+
+            function changeStyle(e) {
+                //console.log(e.clientX, e.clientY, e);
+                //the DOM central coordinate x,y is (0, 0), so i need recalculate coordinate
+                //答案看起來應該是增加百分比的方式, 大約左右最大值為50%, 上下約
+                const x = Math.floor((e.clientX - centralX) / 4);
+                const y = Math.floor((e.clientY - centralY) / 4);
+                h1.style.textShadow = `${x}px ${y}px yellow, ${-x}px ${-y}px green, ${y}px ${x}px red, ${-y}px ${-x}px blue`;
+            }
+
+            outsideFrame.addEventListener('mousemove', changeStyle);
+        </script>
+        -->
+    </body>
+</html>
