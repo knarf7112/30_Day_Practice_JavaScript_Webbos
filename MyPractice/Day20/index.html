@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Speech Detection</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+
+        <div class="words" contenteditable>
+        </div>
+
+        <script>
+            // Chrome 61.0.3163.91 目前只有支援 webkitSpeechRecognition - 2017-09-19
+            window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+            const recognition = new SpeechRecognition(); //言語辨識的api
+            recognition.interimResults = true;
+
+            let p = document.createElement('p');
+            const words = document.querySelector('.words');
+            words.appendChild(p);
+ 
+            //這會有個問題就是何時算結束
+            recognition.addEventListener('result', e =>{
+              console.log(e.results);// results is SpeechRecognitionResultList Object
+              const transcript = Array.from(e.results)
+                                  .map( result => result[0] )  //取得第一個result物件
+                                  .map( result => result.transcript ) //取得result物件內的transcript屬性值 (裡面就是辨識後的文字內容)
+                                  .join(''); //將辨識後的文字陣列合併
+
+              p.textContent = transcript; //輸出到p元素上
+              
+              //如果辨識為最後的文字段落,就再產生一個p元素,用來接續下一段文字內容(如果有繼續辨識言語的話)
+              if(e.results[0].isFinal){
+                  p = document.createElement('p');
+                  words.appendChild(p);
+              }
+
+              if(transcript.includes('Qoo')){
+                  console.log('you get it !!!');
+              }
+              console.log(transcript);
+            });
+
+            recognition.addEventListener('end', recognition.start);//當說話告一個段落後停頓,觸發結束事件並再重新啟動偵測言語辨識,使其變成一個段落的文字
+            recognition.start();
+        </script>
+
+        <style>
+                html {
+                  font-size: 10px;
+                }
+            
+                body {
+                  background:#ffc600;
+                  font-family: 'helvetica neue';
+                  font-weight: 200;
+                  font-size: 20px;
+                }
+            
+                .words {
+                  max-width:500px;
+                  margin:50px auto;
+                  background:white;
+                  border-radius:5px;
+                  box-shadow:10px 10px 0 rgba(0,0,0,0.1);
+                  padding:1rem 2rem 1rem 5rem;
+                  background: -webkit-gradient(linear, 0 0, 0 100%, from(#d9eaf3), color-stop(4%, #fff)) 0 4px;
+                  background-size: 100% 3rem;
+                  position: relative;
+                  line-height:3rem;
+                }
+                p {
+                  margin: 0 0 3rem 0;
+                }
+            
+                .words:before {
+                  content: '';
+                  position: absolute;
+                  width: 4px;
+                  top: 0;
+                  left: 30px;
+                  bottom: 0;
+                  border: 1px solid;
+                  border-color: transparent #efe4e4;
+                }
+        </style>
+    </body>
+</html>
