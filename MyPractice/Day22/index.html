@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>👀👀👀Follow Along Nav</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="style.css" rel="stylesheet">
+    </head>
+    <body>
+        
+        <nav>
+            <ul class="menu">
+                <li><a href="">Home</a></li>
+                <li><a href="">Order Status</a></li>
+                <li><a href="">Tweets</a></li>
+                <li><a href="">Read Our History</a></li>
+                <li><a href="">Contact Us</a></li>
+            </ul>
+        </nav>
+
+        <div class="wrapper">
+                <p>Lorem ipsum dolor sit amet, <a href="">consectetur</a> adipisicing elit. Est <a href="">explicabo</a> unde natus necessitatibus esse obcaecati distinctio, aut itaque, qui vitae!</p>
+                <p>Aspernatur sapiente quae sint <a href="">soluta</a> modi, atque praesentium laborum pariatur earum <a href="">quaerat</a> cupiditate consequuntur facilis ullam dignissimos, aperiam quam veniam.</p>
+                <p>Cum ipsam quod, incidunt sit ex <a href="">tempore</a> placeat maxime <a href="">corrupti</a> possimus <a href="">veritatis</a> ipsum fugit recusandae est doloremque? Hic, <a href="">quibusdam</a>, nulla.</p>
+                <p>Esse quibusdam, ad, ducimus cupiditate <a href="">nulla</a>, quae magni odit <a href="">totam</a> ut consequatur eveniet sunt quam provident sapiente dicta neque quod.</p>
+                <p>Aliquam <a href="">dicta</a> sequi culpa fugiat <a href="">consequuntur</a> pariatur optio ad minima, maxime <a href="">odio</a>, distinctio magni impedit tempore enim repellendus <a href="">repudiandae</a> quas!</p>
+        </div>
+
+        <script>
+            const triggers = document.querySelectorAll('a');
+            const highlight = document.createElement('span');
+            highlight.classList.add('highlight');
+            document.body.appendChild(highlight);
+
+            function highlightLink(){
+                //console.log(this);
+                const linkCoords = this.getBoundingClientRect();
+                const coords = {
+                    width: linkCoords.width,
+                    height: linkCoords.height,
+                    top: linkCoords.top + window.scrollY,
+                    left: linkCoords.left + window.scrollX
+                }
+
+                highlight.style.width = `${coords.width}px`;
+                highlight.style.height = `${coords.height}px`;
+                highlight.style.transform = `translate(${coords.left}px, ${coords.top}px)`;
+            }
+
+            triggers.forEach( a => a.addEventListener('mouseenter', highlightLink));
+
+        </script>
+
+        <!--
+        <script data-description="my solution">
+            /*  分析解答頁面的畫面: 移動到某個anchor上就Heighlight此元素並有移動的特效
+                1.所有anchor都沒有新增任何類別,反而是最底下多一個span且類別是heighlight並且有變更inline style的width, height, transform
+                2.所有anchor都有個mouseenter event
+
+                think: 用一個body間聽所有anchor還是所有anchor都設一個mouseenter event?
+            */
+            const links = document.querySelectorAll('a');
+            const span = document.createElement('span');
+            span.classList.add('highlight');
+            document.body.appendChild(span);
+            /*
+            // 方法一: 所有anchor都建立一個eventListner來監聽mouseenter事件
+            links.forEach(link => link.addEventListener('mouseenter', e =>{
+                //console.log(e.target.textContent);
+                //當此anchor被觸發時
+                //1. 取得使元素的位置與長寬
+                //2. 將span元素(用來當作文字的heighlight背景)設定與目前元素相同的位置與寬高來當作背景
+
+                let positionInfo = e.target.getBoundingClientRect();
+                span.style.cssText = `width:${positionInfo.width}px; height:${positionInfo.height}px; 
+                                      transform: translate(${positionInfo.x + scrollX}px, ${positionInfo.y + window.scrollY}px)`;
+                //console.log(span);
+            }));
+            */
+            //方法二: 使用一個event間聽所有的anchor
+            let currentDOM = null;
+            document.addEventListener('mousemove', e => {
+                //若目標是anchor且非跟之前記錄的一樣的就換
+                if(e.target instanceof HTMLAnchorElement && currentDOM !== e.target){
+                    currentDOM = e.target;
+                    console.log('got it',e.target.textContent);
+                    let positionInfo = e.target.getBoundingClientRect();
+                    span.style.cssText = `width:${positionInfo.width}px; height:${positionInfo.height}px;  
+                                          transform: translate(${positionInfo.x + window.scrollX}px, ${positionInfo.y + window.scrollY}px);`;
+                }
+            });
+        </script>
+        -->
+    </body>
+</html>
