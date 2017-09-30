@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Understanding JavaScript's Capture</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body class="bod">
+            
+              <div class="one">
+                <div class="two">
+                  <div class="three">
+                  </div>
+                </div>
+              </div>
+    
+    <style>
+        html {
+            box-sizing: border-box;
+        }
+
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+
+        div {
+            width: 100%;
+            padding: 100px;
+        }
+
+        .one {
+            background: thistle;
+        }
+
+        .two {
+            background: mistyrose;
+        }
+
+        .three {
+            background: coral;
+        }
+    </style>
+
+    <button></button>
+
+    <script>
+        const divs = document.querySelectorAll('div');//document.querySelectorAll('div:not(.three)');
+        const button = document.querySelector('button');
+
+        function logText(e){
+            console.log('logText1',this, this.classList.value);
+        }
+
+        divs.forEach( div => div.addEventListener('click', logText, { 
+            capture: false,
+            once: true  /* 表示觸發的行為只綁定一次,也就是說當事件觸發一次後就會被remove掉 */
+        }));
+
+        button.addEventListener('click', ()=>{
+            console.log('click !!!');   
+        },{
+            once:true /* 只綁定一次,當按鈕觸發一次後就會把此事件自動移除 */
+        })
+
+        /*
+        //ref:  http://blog.techbridge.cc/2017/07/15/javascript-event-propagation/
+        //以下目的是測試兩個觀念與一個不常用的停止事件傳遞方法 
+        //1.先補獲再冒泡 2.事件傳遞到目標上時(AT_TARGET)不分補獲或冒泡,只分誰先建立addEventListener的順序
+        //3. 如果有呼叫preventDefault方法,之後傳遞下去的事件裡也會有同樣效果,ex: 最裡面的超連結呼叫preventDefault後,當事件向上傳遞後,外層的超連結也吃到preventDefault效果而連結行為就廢掉了
+        function logText1(e){
+            console.log('logText1',this, this.classList.value);
+        }
+
+        function logText2(e){
+            console.log('logText2',this, this.classList.value);
+            //e.stopPropagation();
+            e.stopImmediatePropagation(); //當同層也有addEventListener時,會把其它的也都停止傳遞
+            
+        }
+        
+        document.querySelectorAll('div:not(.one)').forEach( div => div.addEventListener('click', logText2, { 
+            capture: false
+            }));
+
+        divs.forEach( div => div.addEventListener('click', logText1, {
+            capture: true
+            }));
+        */
+    </script>
+    </body>
+</html>
