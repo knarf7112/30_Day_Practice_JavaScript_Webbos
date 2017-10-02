@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Click and Drag</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div class="items">
+            <div class="item item1">01</div>
+            <div class="item item2">02</div>
+            <div class="item item3">03</div>
+            <div class="item item4">04</div>
+            <div class="item item5">05</div>
+            <div class="item item6">06</div>
+            <div class="item item7">07</div>
+            <div class="item item8">08</div>
+            <div class="item item9">09</div>
+            <div class="item item10">10</div>
+            <div class="item item11">11</div>
+            <div class="item item12">12</div>
+            <div class="item item13">13</div>
+            <div class="item item14">14</div>
+            <div class="item item15">15</div>
+            <div class="item item16">16</div>
+            <div class="item item17">17</div>
+            <div class="item item18">18</div>
+            <div class="item item19">19</div>
+            <div class="item item20">20</div>
+            <div class="item item21">21</div>
+            <div class="item item22">22</div>
+            <div class="item item23">23</div>
+            <div class="item item24">24</div>
+            <div class="item item25">25</div>
+        </div>
+        
+        <script>
+            const slider = document.querySelector('.items');
+            let isDown = false;//用來控制點擊/放開滑鼠
+            let startX;     //記錄滑鼠按下的X軸位置
+            let scrollLeft;//記錄sliderLeft的初始位置
+
+            slider.addEventListener('mousedown', (e) => {
+                isDown = true;
+                slider.classList.add('active'); //設定放大效果
+                startX = e.pageX - slider.offsetLeft; //須要扣除元素左邊的空間,例如:margin的空間
+                scrollLeft = slider.scrollLeft;// 此變數用來記錄第一次進入的狀態,因為mousemove會讓每次的位置還原回初始位置,所以須要有個變數記錄初始位置
+            });
+            slider.addEventListener('mouseleave', () => {
+                isDown = false;
+                slider.classList.remove('active');
+            });
+            slider.addEventListener('mouseup', () => {
+                isDown = false;
+                slider.classList.remove('active');
+            });
+            slider.addEventListener('mousemove', (e) => {
+                
+                if(!isDown) return; // stop function running
+                e.preventDefault();//避免選到文字內容以及滑動時被其它地方搞到
+                const x = e.pageX - slider.offsetLeft; //目前X軸位置
+                //console.log({x , startX});
+                const walk = (x - startX) * 3 ; //移動的間距 * 3倍速
+
+                slider.scrollLeft = scrollLeft - walk;// 上次的初始位置
+
+            });
+        </script>
+
+        <!--
+        <script data-description="my solution">
+            /*
+            分析解答的頁面動作:
+            1.滑鼠左鍵點擊白色區塊內會產生放大且顏色變白的效果 => 最外層div的class添加"active"
+            2.滑鼠開始向左右移動,當移動到左右的極限就不動了    
+            3.當滑鼠左鍵放開,則縮小回原來的樣子
+            */
+
+            
+            const div = document.querySelector('div.items');
+            let currentX = 0;
+            let start = false;
+
+            function handleMousedown(e){
+                console.log('mouse down',e.offsetX);
+                this.classList.add('active');//設定放大效果
+                //2.記錄mousedown時的滑鼠座標位置
+                start = true;
+                currentX = this.scrollLeft + e.clientX;
+                console.log('start scroll Left:', this.scrollLeft);
+            }
+
+            function handleMousemove(e){
+                if(start){
+                    this.scrollLeft = (currentX - e.clientX) >= this.scrollWidth ? this.scrollWidth: (currentX - e.clientX);
+                   //console.log(currentX - e.offset, this.scrollLeft );
+                }
+            }
+
+            function handleMouseup(e){
+                console.log('mouse up');
+                this.classList.remove('active');//還原放大效果
+                this.scrollLeft = (currentX - e.clientX) >= this.scrollWidth ? this.scrollWidth: (currentX - e.clientX);
+                start = false;
+                console.log('end scroll Left:', this.scrollLeft);
+            }
+
+
+            //1.設定div區塊的mousedown和mousemove和mouseup事件
+            div.addEventListener('mousedown',handleMousedown);
+            div.addEventListener('mousemove',handleMousemove);
+            div.addEventListener('mouseup',handleMouseup);
+        </script>
+        -->
+    </body>
+</html>
