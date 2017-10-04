@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Video Speed Scrubber</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="style.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="wrapper">
+            <video class="flex" width="765" height="430" src="https://player.vimeo.com/external/194837908.sd.mp4?s=c350076905b78c67f74d7ee39fdb4fef01d12420&profile_id=164" loop controls></video>
+            <div class="speed">
+              <div class="speed-bar">1×</div>
+            </div>
+          </div>
+        
+        <script>
+            const speed = document.querySelector('.speed');
+            const bar = document.querySelector('.speed-bar');
+            const video = document.querySelector('.flex');
+
+            function handleMove(e) {
+                //0.4 ~ 4.0 = 3.6
+                const y = e.pageY - this.offsetTop; // 此元素的Top位置 = 相對於整個page的滑鼠Y軸位置 - 元素上面的空間
+                const persent = y / this.offsetHeight; // 元素的Top位置 / 元素總高度 = 移動所佔的百分比
+                const min = 0.4;
+                const max = 4;
+                const playbackRate = min + (max - min) * persent; //最小:0.4 + (間距 3.6 * 目前移動的百分比)
+                //console.log(y, persent, playbackRate);
+                bar.style.height = `${ Math.round(persent * 100) }%`;
+                bar.textContent = `${playbackRate.toFixed(2)}x`;
+
+                video.playbackRate = +playbackRate.toFixed(2);
+            }
+            speed.addEventListener('mousemove', handleMove);
+        </script>
+    </body>
+</html>
