@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Whack A Mole!</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href='https://fonts.googleapis.com/css?family=Amatic+SC:400,700' rel='stylesheet' type='text/css'>
+        <link href="style.css" rel="stylesheet">
+    </head>
+    <body>
+    
+  <h1>Whack-a-mole! <span class="score">0</span></h1>
+  <button onClick="startGame()">Start!</button>
+
+  <div class="game">
+    <div class="hole hole1">
+      <div class="mole"></div>
+    </div>
+    <div class="hole hole2">
+      <div class="mole"></div>
+    </div>
+    <div class="hole hole3">
+      <div class="mole"></div>
+    </div>
+    <div class="hole hole4">
+      <div class="mole"></div>
+    </div>
+    <div class="hole hole5">
+      <div class="mole"></div>
+    </div>
+    <div class="hole hole6">
+      <div class="mole"></div>
+    </div>
+  </div>
+
+  <script>
+    const holes = document.querySelectorAll('.hole');
+    const scoreBoard = document.querySelector('.score');
+    const moles = document.querySelectorAll('.mole');
+    let lastHole;
+    let timeUp = false;
+    let score = 0;
+
+    //隨機時間
+    function randomTime(min, max){
+      return Math.round(Math.random() * ( max -min) + min);
+    }
+
+    //隨機選洞
+    function randomHole(holes){
+      const idx = Math.floor(Math.random() * holes.length);//隨機從洞元素取一個索引
+      const hole = holes[idx];
+      if(hole === lastHole){
+        console.log('Ah nah thats the same one bud'); //又選到相同的洞
+        return randomHole(holes); //再重新選一個,會一直遞迴到不重覆的洞為止
+      }
+
+      lastHole = hole;
+      return hole;
+    }
+
+    //隨機彈縮堰鼠並在時間內隱藏
+    function peep(){
+      const time = randomTime( 200, 1000 ); //產生隨機時間間距
+      const hole = randomHole( holes );     //產生隨機洞口
+      //console.log(time, hole);
+
+      hole.classList.add('up');//1. 彈出堰鼠
+
+      //2. 時間到縮下去
+      setTimeout( ()=>{
+        hole.classList.remove('up');
+        if(!timeUp) peep();//timeUp 未關閉則持續讓堰鼠不斷的彈縮
+      }, time);
+    }
+
+    function startGame(){
+      scoreBoard.textContent = 0; //init content
+      timeUp = false;
+      score = 0;
+      peep();
+      setTimeout(()=> timeUp = true, 10000);// 設定10秒後停止跳出堰鼠 
+    }
+
+    function bonk(e){
+      if(!e.isTrusted) return;
+      //console.log(e); //裡面有個bool類型的isTrusted屬性,當使用javascript強制執行時,此值會是false,但如果是點擊畫面產生則是true
+      this.classList.remove('up'); //點到堰鼠所以縮起來
+      score++;
+      scoreBoard.textContent = score;
+    }
+
+    moles.forEach(mole => mole.addEventListener('click', bonk));
+  </script>
+
+    <!--    
+    <script data-description="my solution">
+        const holes = document.querySelectorAll('.hole');
+        const scoreBoard = document.querySelector('.score');
+        const moles = document.querySelectorAll('.mole');
+        const intervalType = [1, .5, .3];
+        let lastIndex;
+        /*
+        觀察解答頁面動作的分析
+        1.點擊start會在隨機位置產生一個上升的堰鼠(總數量不一定,所以應該是某個限定的時間內,感覺應該是11秒內)
+        2.上升的堰鼠的外層div會新增一個class=>"up"
+        3.點擊到堰鼠,最上面的分數會+1
+        
+        so i need
+        1. 在11秒內,在六個div內,隨機增加某個div的up類別並移除上一個
+        
+        Conclusion:
+        一開始使用setInterval發現只能平穩的顯示堰鼠,
+        本來以為須要在計時器內再產生timer來凸顯瞬間加速,
+        後來覺得只要每次改變timeout時間即可達到瞬間加速的效果,
+        再來是要考慮每次recall方法時,須要帶入上次的狀態或累積值,所以須要帶入累積的count(才能知道何時能結束)和上次位置(消除用)
+        */
+
+        //開始產生隨機的堰鼠
+        function startGame(){
+          console.log('start Game...');
+          let total = 20;
+
+          // initial score content
+          scoreBoard.textContent = '0';
+
+          startRndShow(total);
+        }
+
+        //計時隨機顯示
+        function startRndShow(total, lastIndex){
+          // 1.隨機取得一個倒數時間區間 ( 1秒, 0.5秒, 0.3秒 ) 當作本次計時器的完成
+          let timeCount = intervalType[genRndInteger(intervalType.length)];
+          
+          //設定下次顯示堰鼠的時間
+          setTimeout( ()=>{
+            // 2. 移除上次顯示的位置
+            (lastIndex !== undefined) && holes[lastIndex].classList.remove('up');
+
+            // 3. 若還能顯示
+            if(total >= 0){
+              // 3. 隨機顯示並回傳位置的索引值
+              let newLastIndex = rndDisplayMole();
+              console.assert(!(lastIndex === newLastIndex), `真幸運! 又抽到和上次一樣的位置: ${lastIndex}`);
+
+              // 4. 設定下一次的執行,並帶入本次顯示的位置索引(清除用)
+              startRndShow(total - 1, newLastIndex);
+            }
+          }, timeCount * 1000);
+        }
+
+        //隨機顯示堰鼠
+        function rndDisplayMole(){
+          let index = genRndInteger(holes.length);
+          holes[index].classList.add('up');
+          return index;
+        }
+
+        //產生一個隨機整數
+        function genRndInteger(max, min = 0){
+          return Math.floor(Math.random() * (max - min) + min);
+        }
+
+        // 點擊堰鼠則分數+1
+        moles.forEach( mole => mole.addEventListener('click',(e)=>{
+          scoreBoard.textContent = parseInt(scoreBoard.textContent) + 1;
+        }));
+    </script>
+    -->
+    </body>
+</html>
